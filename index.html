@@ -193,11 +193,11 @@
     <div id="cursor-glow" class="opacity-0 hidden lg:block"> <div class="glow-circle"></div>
     </div>
     
-    <div class="fixed top-4 right-4 z-50 p-3 bg-gray-950/70 backdrop-blur-sm border border-cyan-400/30 rounded-lg shadow-2xl hidden md:block w-56 font-mono text-xs">
+    <!-- <div class="fixed top-4 right-4 z-50 p-3 bg-gray-950/70 backdrop-blur-sm border border-cyan-400/30 rounded-lg shadow-2xl hidden md:block w-56 font-mono text-xs">
         <p class="text-cyan-400 mb-1 leading-tight">SYSTEM LOG v4.1</p>
         <div id="log-output" class="h-16 overflow-hidden space-y-[2px] text-gray-500 leading-tight">
         </div>
-    </div>
+    </div> -->
 
     <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8"> <header class="sticky top-0 z-40 bg-[#030712]/90 backdrop-blur-md border-b border-gray-900 py-4">
             <div class="flex justify-between items-center max-w-7xl mx-auto">
@@ -216,10 +216,10 @@
                 </nav>
 
                 <div class="flex space-x-4">
-                    <a href="https://github.com/your_tejas_username" target="_blank" class="text-gray-400 hover:text-cyan-400 transition duration-300 p-2 rounded-full hover:bg-gray-800" aria-label="GitHub Profile">
+                    <a href="https://github.com/Tejas56934" target="_blank" class="text-gray-400 hover:text-cyan-400 transition duration-300 p-2 rounded-full hover:bg-gray-800" aria-label="GitHub Profile">
                         <i data-lucide="github" class="w-6 h-6"></i>
                     </a>
-                    <a href="https://linkedin.com/in/your_tejas_username" target="_blank" class="text-gray-400 hover:text-cyan-400 transition duration-300 p-2 rounded-full hover:bg-gray-800" aria-label="LinkedIn Profile">
+                    <a href="https://www.linkedin.com/in/tejas-pandit-29557525a/" target="_blank" class="text-gray-400 hover:text-cyan-400 transition duration-300 p-2 rounded-full hover:bg-gray-800" aria-label="LinkedIn Profile">
                         <i data-lucide="linkedin" class="w-6 h-6"></i>
                     </a>
                     </div>
@@ -517,6 +517,35 @@
                 cursorGlow.style.opacity = '0';
             });
 
+            // 2. Mobile Touch Movement (Fires when scrolling with finger)
+document.addEventListener('touchmove', (e) => {
+    // Prevent default scrolling only if necessary, but generally let it scroll
+    // e.preventDefault(); 
+    
+    // Use the first touch point (e.touches[0])
+    const touchX = e.touches[0].clientX;
+    const touchY = e.touches[0].clientY;
+    updateGlowPosition(touchX, touchY);
+}, { passive: true }); // Use passive: true for performance
+
+// --- Event Listeners for Fade Out ---
+
+// Fade out the glow when the mouse leaves the document (Desktop)
+document.addEventListener('mouseleave', () => {
+    glowElement.classList.remove('is-active');
+    isMoving = false;
+});
+
+// Fade out the glow when the touch ends (Mobile)
+document.addEventListener('touchend', () => {
+    // Keep the glow visible for a short time after the lift
+    setTimeout(() => {
+        glowElement.classList.remove('is-active');
+        isMoving = false;
+    }, 100); 
+});
+            
+
             // Start the smoothing loop
             animateGlow();
         }
@@ -526,17 +555,7 @@
         // RUNNING LOG SCRIPT (No change needed for responsiveness)
         // ----------------------------------------------------
         const logOutput = document.getElementById('log-output');
-        const logMessages = [
-            "[2025-11-24] Initializing System v4.1...",
-            "[INFO] Java 17 Runtime Environment detected.",
-            "[INFO] Spring Boot Context loaded successfully.",
-            "[200] Connection_Established: tejas.dev@github.",
-            "[200] Kafka Stream: User profile data acquired.",
-            "[WARN] Latency spike detected. Resolving...",
-            "[OK] High-Concurrency Lock Acquired: Redis.",
-            "[200] ML Model Inference complete. Latency: 12ms.",
-            "[INFO] Processing next artifact deployment..."
-        ];
+        
 
         let logIndex = 0;
         const maxLogLines = 5;
