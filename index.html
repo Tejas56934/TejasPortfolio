@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tejas - Advanced Java & AI Interface</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* Import Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            cursor: none; 
+            overflow-x: hidden; 
+            background-color: #030712; /* Deeper space black */
+        }
+
+        /* Utility Styles */
+        .neon-text {
+            text-shadow: 0 0 5px rgba(59, 130, 246, 0.4), 0 0 10px rgba(96, 165, 250, 0.2);
+        }
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-preserve-3d {
+            transform-style: preserve-3d;
+        }
+        .rotate-y-10 {
+            transform: rotateY(10deg);
+        }
+        .tech-tag {
+            @apply text-sm font-medium px-4 py-1 bg-blue-900/50 rounded-full border border-blue-500/50 text-cyan-400 shadow-lg transition duration-300 hover:bg-blue-800;
+        }
+        
+        /* 1. HERO GRADIENT: Electric Grid Effect */
+        .electric-grid-bg {
+            background-image: radial-gradient(circle at center, rgba(34, 211, 238, 0.1) 0%, transparent 70%), 
+                              linear-gradient(to top, #030712 0%, transparent 20%);
+        }
+
+        /* 2. CURSOR GLOW EFFECT STYLING (Sharp Cyan/Blue focus) */
+        #cursor-glow {
+            position: fixed;
+            width: 250px; 
+            height: 250px;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0; 
+            transition: opacity 0.5s;
+            transform: translate(-50%, -50%);
+        }
+        .glow-circle {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #22d3ee 0%, transparent 70%); 
+            border-radius: 50%; 
+            filter: blur(120px); 
+        }
+
+        /* 3. CODE PARTICLE STYLING */
+        .code-particle {
+            position: fixed;
+            color: #22d3ee; 
+            font-size: 16px;
+            font-weight: bold;
+            pointer-events: none;
+            animation: code-fade-out 2s forwards ease-out; 
+            text-shadow: 0 0 8px rgba(34, 211, 238, 0.8); 
+            font-family: 'Space Mono', monospace; 
+        }
+
+        @keyframes code-fade-out {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x-dist), var(--y-dist)) scale(0.3) rotate(180deg); 
+                opacity: 0;
+            }
+        }
+        
+        /* 4. ANIMATED BORDER EFFECT (Pulsating) */
+        .animated-border {
+            position: relative;
+            z-index: 10;
+        }
+        .animated-border::before {
+            content: '';
+            position: absolute;
+            top: -2px; right: -2px; bottom: -2px; left: -2px;
+            background: linear-gradient(90deg, #3b82f6, #06b6d4, #3b82f6);
+            background-size: 400% 400%;
+            z-index: -1;
+            border-radius: 1rem; 
+            filter: blur(8px);
+            opacity: 0.5;
+            animation: pulse-border 4s ease-in-out infinite;
+        }
+        @keyframes pulse-border {
+            0% { background-position: 0% 50%; opacity: 0.5; }
+            50% { background-position: 100% 50%; opacity: 0.8; }
+            100% { background-position: 0% 50%; opacity: 0.5; }
+        }
+
+        /* 5. TIMELINE ENHANCEMENTS - Mobile-first alignment */
+        .timeline-line {
+            position: absolute;
+            left: 10px; /* Start on the left for all screens */
+            transform: none;
+            width: 3px; 
+            background: linear-gradient(to top, #3b82f6, #1e3a8a); 
+            height: 100%;
+            top: 0;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); 
+        }
+        .timeline-node {
+            position: absolute;
+            z-index: 10;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #22d3ee; 
+            box-shadow: 0 0 10px #22d3ee, 0 0 5px #22d3ee; 
+            left: 10px; /* Aligned with the line */
+            transform: translate(-50%, -50%);
+        }
+        .timeline-content {
+             margin-left: 30px; /* Space for node on mobile */
+        }
+        @media (min-width: 1024px) { /* Laptops and larger */
+            .timeline-line {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            .timeline-node {
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+            .timeline-content {
+                margin-left: 0; /* Reset margin for large screen */
+            }
+        }
+
+        /* 6. SKILL PROGRESS BAR */
+        .skill-progress-bar {
+            height: 4px;
+            background-color: #1f2937; 
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .skill-level {
+            height: 100%;
+            background: linear-gradient(to right, #0ea5e9, #22d3ee);
+            transition: width 1s ease-out;
+            box-shadow: 0 0 5px #22d3ee;
+        }
+
+        /* 7. PARTICLE BACKGROUND CANVAS */
+        #particle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2; 
+            pointer-events: none;
+        }
+
+        /* Custom Mobile Hero Headings */
+        @media (max-width: 640px) {
+            .hero-title {
+                font-size: 3rem; /* 48px, smaller than 7xl/8xl */
+                line-height: 1.1;
+            }
+            .hero-subtitle {
+                font-size: 1.5rem; /* 24px */
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#030712] text-white min-h-screen">
+    
+    <canvas id="particle-bg"></canvas> 
+
+    <div id="cursor-glow" class="opacity-0 hidden lg:block"> <div class="glow-circle"></div>
+    </div>
+    
+    <div class="fixed top-4 right-4 z-50 p-3 bg-gray-950/70 backdrop-blur-sm border border-cyan-400/30 rounded-lg shadow-2xl hidden md:block w-56 font-mono text-xs">
+        <p class="text-cyan-400 mb-1 leading-tight">SYSTEM LOG v4.1</p>
+        <div id="log-output" class="h-16 overflow-hidden space-y-[2px] text-gray-500 leading-tight">
+        </div>
+    </div>
+
+    <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8"> <header class="sticky top-0 z-40 bg-[#030712]/90 backdrop-blur-md border-b border-gray-900 py-4">
+            <div class="flex justify-between items-center max-w-7xl mx-auto">
+                <div class="flex items-center">
+                     <h1 class="text-3xl font-extrabold text-white tracking-wider neon-text mr-4">
+                         T<span class="text-cyan-400">E</span>JAS<span class="text-blue-500">.DEV</span>
+                     </h1>
+                     <img src="/assests/A-4 size Photo.jpg" alt="Tejas Profile" class="h-14 w-14 sm:h-20 sm:w-20 rounded-full object-cover border-2 border-cyan-400/50">
+                </div>
+
+                <nav class="hidden md:flex space-x-8 text-lg font-medium">
+                    <a href="#projects" class="hover:text-cyan-400 transition duration-300">Projects</a>
+                    <a href="#skills" class="hover:text-cyan-400 transition duration-300">Skills Matrix</a>
+                    <a href="#education" class="hover:text-cyan-400 transition duration-300">Data Stream</a>
+                    <a href="#resume" class="hover:text-cyan-400 transition duration-300">Access Files</a>
+                </nav>
+
+                <div class="flex space-x-4">
+                    <a href="https://github.com/your_tejas_username" target="_blank" class="text-gray-400 hover:text-cyan-400 transition duration-300 p-2 rounded-full hover:bg-gray-800" aria-label="GitHub Profile">
+                        <i data-lucide="github" class="w-6 h-6"></i>
+                    </a>
+                    <a href="https://linkedin.com/in/your_tejas_username" target="_blank" class="text-gray-400 hover:text-cyan-400 transition duration-300 p-2 rounded-full hover:bg-gray-800" aria-label="LinkedIn Profile">
+                        <i data-lucide="linkedin" class="w-6 h-6"></i>
+                    </a>
+                    </div>
+            </div>
+        </header>
+
+        <main class="mt-8 sm:mt-16 space-y-24 sm:space-y-40">
+
+            <section id="details" class="flex flex-col lg:flex-row items-center justify-between gap-12 py-16 sm:py-32 electric-grid-bg border-b border-gray-900/50 max-w-7xl mx-auto">
+                <div class="lg:w-3/5 text-center lg:text-left">
+                    <p class="text-cyan-400 text-base sm:text-xl mb-4 uppercase font-bold tracking-[0.3em]"></p>
+                    <h2 class="hero-title text-5xl sm:text-7xl lg:text-8xl font-extrabold leading-none mb-6">
+                        <span class="neon-text">GREETINGs</span>. 
+                        I'm <span class="text-blue-400">Tejas</span>.
+                    </h2>
+                    <p class="text-gray-300 text-sm sm:text-lg max-w-xl mx-auto lg:mx-0 mb-10">
+                        I am a passionate Java and AI developer who loves building smart, efficient, and scalable applications. With strong expertise in **Java**, **machine learning**, and **intelligent system development**, I enjoy turning complex problems into clean, optimized solutions. I focus on creating innovative projects that combine logic, automation, and real-world impact. Coding is not just my skill—it's my passion, and I continually push myself to learn, experiment, and innovate.
+                    </p>
+                    
+                    <a href="#projects" class="mt-10 inline-flex items-center justify-center px-6 sm:px-10 py-3 sm:py-4 border border-transparent text-base sm:text-lg font-bold rounded-full shadow-lg text-black bg-cyan-400 hover:bg-cyan-500 transition duration-300 transform hover:scale-105">
+                        ACCESS PROJECT LOGS <i data-lucide="zap" class="w-5 h-5 ml-3"></i>
+                    </a>
+                </div>
+
+                <div class="lg:w-2/5 flex justify-center lg:justify-end mt-10 lg:mt-0">
+                    <div class="w-56 h-56 sm:w-80 sm:h-80 bg-gray-900 rounded-xl shadow-2xl animated-border">
+                        <img src="image.png" alt="Profile of Tejas" class="w-full h-full object-cover rounded-xl opacity-90 transition duration-500 hover:opacity-100" onerror="this.onerror=null; this.src='https://placehold.co/320x320/0a0a0a/22d3ee?text=TEJAS%20AI%20PROFILE';">
+                    </div>
+                </div>
+            </section>
+            
+            <hr class="border-gray-900"/>
+
+            <section id="skills" class="py-10 sm:py-20 max-w-7xl mx-auto">
+                <h3 class="text-4xl sm:text-6xl font-extrabold mb-10 sm:mb-16 text-center neon-text">
+                    SKILLS <span class="text-blue-500">MATRIX</span>
+                </h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+                    <div class="group perspective-1000">
+                        <div class="relative p-6 sm:p-8 h-full bg-gray-900 rounded-xl border border-gray-800 shadow-2xl transition-all duration-700 ease-in-out transform-style-preserve-3d group-hover:rotate-y-10 group-hover:scale-105">
+                            <i data-lucide="coffee" class="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400 mb-4 transition-all group-hover:scale-110"></i>
+                            <h4 class="text-xl sm:text-3xl font-bold mb-3 neon-text">Core Java & Spring</h4>
+                            <p class="text-gray-400 text-xs sm:text-sm">Enterprise-level backend with Java 17+. Focus on concurrency, high throughput, and Spring Boot Microservices.</p>
+                            <div class="skill-progress-bar mt-4"><div class="skill-level" style="width: 90%;"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="group perspective-1000">
+                        <div class="relative p-6 sm:p-8 h-full bg-gray-900 rounded-xl border border-gray-800 shadow-2xl transition-all duration-700 ease-in-out transform-style-preserve-3d group-hover:rotate-y-10 group-hover:scale-105">
+                            <i data-lucide="cpu" class="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400 mb-4 transition-all group-hover:scale-110"></i>
+                            <h4 class="text-xl sm:text-3xl font-bold mb-3 neon-text">Artificial Intelligent</h4>
+                            <p class="text-gray-400 text-xs sm:text-sm">Created projects using AI technology, focusing on integration and performance.</p>
+                            <div class="skill-progress-bar mt-4"><div class="skill-level" style="width: 80%;"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="group perspective-1000">
+                        <div class="relative p-6 sm:p-8 h-full bg-gray-900 rounded-xl border border-gray-800 shadow-2xl transition-all duration-700 ease-in-out transform-style-preserve-3d group-hover:rotate-y-10 group-hover:scale-105">
+                            <i data-lucide="cloud-cog" class="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400 mb-4 transition-all group-hover:scale-110"></i>
+                            <h4 class="text-xl sm:text-3xl font-bold mb-3 neon-text">Vercel and Render</h4>
+                            <p class="text-gray-400 text-xs sm:text-sm">Deployed projects using various deployment tools like Vercel and Render for scalable hosting.</p>
+                            <div class="skill-progress-bar mt-4"><div class="skill-level" style="width: 85%;"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="group perspective-1000">
+                        <div class="relative p-6 sm:p-8 h-full bg-gray-900 rounded-xl border border-gray-800 shadow-2xl transition-all duration-700 ease-in-out transform-style-preserve-3d group-hover:rotate-y-10 group-hover:scale-105">
+                            <i data-lucide="database" class="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400 mb-4 transition-all group-hover:scale-110"></i>
+                            <h4 class="text-xl sm:text-3xl font-bold mb-3 neon-text">Data Streams & NoSQL</h4>
+                            <p class="text-gray-400 text-xs sm:text-sm">Expertise in MYSQL for high-throughput branching, and distributed databases (PostgreSQL, Redis).</p>
+                            <div class="skill-progress-bar mt-4"><div class="skill-level" style="width: 75%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <hr class="border-gray-900"/>
+            
+            <section id="projects" class="py-10 sm:py-20">
+                <h3 class="text-4xl sm:text-5xl font-extrabold mb-10 sm:mb-12 text-center">Deployed <span class="text-blue-500">Artifacts</span></h3>
+                
+                <div class="space-y-10 sm:space-y-12">
+                    <div class="bg-gray-900 p-6 sm:p-8 rounded-2xl shadow-2xl flex flex-col lg:flex-row gap-6 sm:gap-8 border border-blue-500/20 transform hover:-translate-y-1 transition duration-300">
+                        <div class="lg:w-2/3">
+                            <h4 class="text-2xl sm:text-3xl font-bold text-blue-400 mb-3">AI-ERP. Customer Support</h4>
+                            <p class="text-gray-300 text-sm sm:text-base mb-4">A high-performance Java Spring Boot backend with a React framework front-end. This project provides an **AI-based customer support executive** to help clients with complex products like ERP & CRM virtually.</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="text-xs font-medium px-3 py-1 bg-gray-800 rounded-full">Java/Spring Boot</span>
+                                <span class="text-xs font-medium px-3 py-1 bg-gray-800 rounded-full">Generative AI</span>
+                                <span class="text-xs font-medium px-3 py-1 bg-gray-800 rounded-full">React Framework</span>
+                                <span class="text-xs font-medium px-3 py-1 bg-gray-800 rounded-full">MYSQL</span>
+                            </div>
+                            <div class="flex space-x-4 flex-wrap gap-y-3">
+                                <a href="https://your_project_demo_link.com" target="_blank" class="flex items-center text-white bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 text-sm">
+                                    <i data-lucide="link" class="w-4 h-4 mr-2"></i> Active Demo Link
+                                </a>
+                                <a href="https://github.com/Tejas56934/AIERP" target="_blank" class="flex items-center text-gray-300 border border-gray-700 px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-300 text-sm">
+                                    <i data-lucide="github" class="w-4 h-4 mr-2"></i> GitHub Repo
+                                </a>
+                            </div>
+                        </div>
+                        <div class="lg:w-1/3 flex items-center justify-center min-h-48">
+                            <div class="w-full h-48 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 overflow-hidden">
+                                <img src="/assests/ss1.png" alt="Project Visual of AI-ERP" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-900 p-6 sm:p-8 rounded-2xl shadow-2xl flex flex-col lg:flex-row gap-6 sm:gap-8 border border-blue-500/20 transform hover:-translate-y-1 transition duration-300">
+                        <div class="lg:w-2/3">
+                            <h4 class="text-2xl sm:text-3xl font-bold text-blue-400 mb-3">Real-time chat application with AI integration</h4>
+                            <p class="text-gray-300 text-sm sm:text-base mb-4">A real-time chat application where users can collaborate and interact with AI to create projects. It features an integrated **VS-Code-like code editor** for collaborative coding.</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="text-xs font-medium px-3 py-1 bg-gray-800 rounded-full">JAVA/Spring Boot</span>
+                                <span class="text-xs font-medium px-3 py-1 bg-gray-800 rounded-full">Redis</span>
+                                <span class="text-xs font-medium px-3 py-1 bg-gray-800 rounded-full">React Framework</span>
+                                <span class="text-xs font-medium px-3 py-1 bg-gray-800 rounded-full">MongoDB</span>
+                            </div>
+                            <div class="flex space-x-4 flex-wrap gap-y-3">
+                                <a href="https://your_project_demo_link.com" target="_blank" class="flex items-center text-white bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 text-sm">
+                                    <i data-lucide="link" class="w-4 h-4 mr-2"></i> Active Demo Link
+                                </a>
+                                <a href="https://github.com/yourusername/distributed-lock" target="_blank" class="flex items-center text-gray-300 border border-gray-700 px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-300 text-sm">
+                                    <i data-lucide="github" class="w-4 h-4 mr-2"></i> GitHub Repo
+                                </a>
+                            </div> 
+                        </div>
+                        <div class="lg:w-1/3 flex items-center justify-center min-h-48">
+                            <div class="w-full h-48 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500">
+                                Architectural Overview Placeholder
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <hr class="border-gray-900"/>
+
+
+            <section id="education" class="py-10 sm:py-20 border-t border-gray-900 max-w-7xl mx-auto">
+                <h3 class="text-4xl sm:text-6xl font-extrabold mb-10 sm:mb-16 text-center neon-text">
+                    DATA <span class="text-blue-500">STREAM</span>
+                </h3>
+                
+                <div class="relative max-w-5xl mx-auto">
+                    <div class="timeline-line"></div> <div class="space-y-12 sm:space-y-24">
+                        
+                        <div class="relative flex items-center w-full lg:justify-end">
+                            <div class="timeline-node absolute -top-1"></div>
+                            <div class="timeline-content w-full p-6 rounded-xl bg-gray-900 shadow-2xl border border-blue-500/30 transform hover:shadow-blue-500/50 transition duration-300 lg:w-[48%] lg:ml-auto lg:mr-0 text-left">
+                                <p class="text-xs sm:text-sm uppercase text-cyan-400 font-bold mb-1 tracking-wider">Official Journey | 2025 - Ongoing</p>
+                                <h4 class="text-2xl sm:text-3xl font-bold mb-2 neon-text">Software Developer</h4>
+                                <h4 class="text-base sm:text-xl font-bold mb-2 neon-text">(Java & AI)</h4>
+                                <p class="text-gray-300">EduPlus Campus</p>
+                            </div>
+                        </div>
+                    
+                        <div class="relative flex items-center w-full lg:justify-start">
+                            <div class="timeline-node absolute -top-1"></div>
+                            <div class="timeline-content w-full p-6 rounded-xl bg-gray-900 shadow-2xl border border-blue-500/30 transform hover:shadow-blue-500/50 transition duration-300 lg:w-[48%] lg:mr-auto lg:ml-0 text-left">
+                                <p class="text-xs sm:text-sm uppercase text-cyan-400 font-bold mb-1 tracking-wider">College Journey | 2023 - 2025</p>
+                                <h4 class="text-2xl sm:text-3xl font-bold mb-2 neon-text">Bachelor's Of Computer Applications</h4>
+                                <p class="text-white-100">Shivaji University, Kolhapur's</p>
+                                <p class="text-gray-300">Karmaveer Bhaurao Patil, Institute of Management and Research SATARA</p>
+                                <p class="text-xs sm:text-sm text-gray-400 mt-3">Specialization in Core Java concepts and Python. Focused on optimizing Java inference.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <hr class="border-gray-900"/>
+
+
+            <section id="resume" class="py-10 sm:py-20 border-t border-gray-900 max-w-7xl mx-auto">
+                <h3 class="text-4xl sm:text-6xl font-extrabold mb-10 sm:mb-16 text-center neon-text">
+                    ACCESS <span class="text-blue-500">FILES</span>
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
+                    <div class="p-6 sm:p-8 bg-gray-900 rounded-xl shadow-2xl border border-gray-800 hover:border-cyan-400 transition duration-300 group">
+                        <i data-lucide="layout-grid" class="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400 mb-4 group-hover:scale-110 transition"></i>
+                        <h4 class="text-xl sm:text-2xl font-bold mb-3">Technical Resume (ATS-Optimized)</h4>
+                        <p class="text-gray-400 text-sm mb-5">Optimal for ATS screening and detailed technical skills presentation.</p>
+                        <a href="/path/to/resume-tech.pdf" target="_blank" class="text-blue-400 hover:text-blue-300 transition duration-300 flex items-center font-semibold text-sm">
+                            Download PDF <i data-lucide="download" class="w-5 h-5 ml-2"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="p-6 sm:p-8 bg-gray-900 rounded-xl shadow-2xl border border-gray-800 hover:border-cyan-400 transition duration-300 group">
+                        <i data-lucide="layout-list" class="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400 mb-4 group-hover:scale-110 transition"></i>
+                        <h4 class="text-xl sm:text-2xl font-bold mb-3">Academic Data Sheet</h4>
+                        <p class="text-gray-400 text-sm mb-5">Traditional format emphasizing research, education, and publications. Ideal for <span class="text-cyan-400">Masters/Research Applications</span>.</p>
+                        <a href="/path/to/resume-academic.pdf" target="_blank" class="text-blue-400 hover:text-blue-300 transition duration-300 flex items-center font-semibold text-sm">
+                            Download PDF <i data-lucide="download" class="w-5 h-5 ml-2"></i>
+                        </a>
+                    </div>
+
+                    <div class="p-6 sm:p-8 bg-gray-900 rounded-xl shadow-2xl border border-gray-800 hover:border-cyan-400 transition duration-300 group">
+                        <i data-lucide="layout-template" class="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400 mb-4 group-hover:scale-110 transition"></i>
+                        <h4 class="text-xl sm:text-2xl font-bold mb-3">High-Impact One-Pager</h4>
+                        <p class="text-gray-400 text-sm mb-5">Minimalist design focused on 3-5 key achievements and summary of work experience. <span class="text-cyan-400">Target: Recruiters (Quick Review)</span>.</p>
+                        <a href="/path/to/resume-minimal.pdf" target="_blank" class="text-blue-400 hover:text-blue-300 transition duration-300 flex items-center font-semibold text-sm">
+                            Download PDF <i data-lucide="download" class="w-5 h-5 ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="mt-24 py-8 sm:py-10 border-t border-gray-900 text-center">
+            <p class="text-lg sm:text-2xl font-light text-gray-500 tracking-wider">
+                    Thank You For Visiting My Portfolio...!!!!!
+            </p>
+            
+            <div id="contact" class="text-base sm:text-lg text-gray-400 mt-4 sm:mt-6">
+                <i data-lucide="mail" class="w-5 h-5 inline-block mr-2 text-blue-400"></i> tejaspandit623@gmail.com
+            </div>
+        </footer>
+
+    </div>
+    
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // ----------------------------------------------------
+        // CURSOR GLOW EFFECT & CODE PARTICLE JAVASCRIPT
+        // NOTE: This effect is usually disabled or hidden on mobile devices.
+        // I've added 'hidden lg:block' to the #cursor-glow div in HTML.
+        // ----------------------------------------------------
+        const cursorGlow = document.getElementById('cursor-glow');
+        let targetX = 0;
+        let targetY = 0;
+        let currentX = 0;
+        let currentY = 0;
+        const speed = 0.18; 
+        let lastSpawnTime = 0;
+        const spawnDelay = 25; 
+
+        // Only run effects on non-touch devices
+        if (!('ontouchstart' in window) && window.innerWidth >= 1024) { 
+            const animateGlow = () => {
+                currentX += (targetX - currentX) * speed;
+                currentY += (targetY - currentY) * speed;
+                
+                cursorGlow.style.left = `${currentX}px`;
+                cursorGlow.style.top = `${currentY}px`;
+
+                requestAnimationFrame(animateGlow);
+            };
+
+            const spawnCodeParticle = (x, y) => {
+                const now = Date.now();
+                if (now - lastSpawnTime < spawnDelay) return;
+                lastSpawnTime = now;
+
+                const codeElements = ['0', '1', 'A', 'F', '}', ';', '(', ')', '/', '@', '#'];
+                const char = codeElements[Math.floor(Math.random() * codeElements.length)];
+
+                const particle = document.createElement('span');
+                particle.textContent = char;
+                particle.className = 'code-particle';
+                
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+
+                const xDist = (Math.random() - 0.5) * 100; 
+                const yDist = (Math.random() - 0.5) * 100;
+                particle.style.setProperty('--x-dist', `${xDist}px`);
+                particle.style.setProperty('--y-dist', `${yDist}px`);
+                particle.style.fontSize = `${12 + Math.random() * 8}px`; 
+
+                document.body.appendChild(particle);
+
+                setTimeout(() => {
+                    particle.remove();
+                }, 2000);
+            }
+
+            document.addEventListener('mousemove', (e) => {
+                targetX = e.clientX;
+                targetY = e.clientY;
+
+                spawnCodeParticle(e.clientX, e.clientY);
+
+                if (cursorGlow.style.opacity !== '1') {
+                    cursorGlow.style.opacity = '1';
+                }
+            });
+
+            document.addEventListener('mouseleave', () => {
+                cursorGlow.style.opacity = '0';
+            });
+
+            // Start the smoothing loop
+            animateGlow();
+        }
+
+
+        // ----------------------------------------------------
+        // RUNNING LOG SCRIPT (No change needed for responsiveness)
+        // ----------------------------------------------------
+        const logOutput = document.getElementById('log-output');
+        const logMessages = [
+            "[2025-11-24] Initializing System v4.1...",
+            "[INFO] Java 17 Runtime Environment detected.",
+            "[INFO] Spring Boot Context loaded successfully.",
+            "[200] Connection_Established: tejas.dev@github.",
+            "[200] Kafka Stream: User profile data acquired.",
+            "[WARN] Latency spike detected. Resolving...",
+            "[OK] High-Concurrency Lock Acquired: Redis.",
+            "[200] ML Model Inference complete. Latency: 12ms.",
+            "[INFO] Processing next artifact deployment..."
+        ];
+
+        let logIndex = 0;
+        const maxLogLines = 5;
+
+        const updateLog = () => {
+            const message = logMessages[logIndex % logMessages.length];
+            
+            const p = document.createElement('p');
+            p.textContent = message;
+            p.classList.add('log-line'); 
+            
+            logOutput.prepend(p);
+
+            while (logOutput.children.length > maxLogLines) {
+                logOutput.lastChild.remove();
+            }
+
+            logIndex++;
+        };
+
+        // Start the log running every 1.5 seconds, only if log element exists (i.e. not on mobile)
+        if (logOutput) {
+            setInterval(updateLog, 1500);
+        }
+
+        // ----------------------------------------------------
+        // PARTICLE BACKGROUND SCRIPT (No change needed for responsiveness)
+        // ----------------------------------------------------
+        const canvas = document.getElementById('particle-bg');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const numParticles = 80;
+
+        const setCanvasSize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+
+        window.addEventListener('resize', setCanvasSize);
+        setCanvasSize();
+
+        function Particle() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.vx = (Math.random() - 0.5) * 0.3; 
+            this.vy = (Math.random() - 0.5) * 0.3;
+            this.radius = Math.random() * 1.5 + 0.5;
+            this.color = 'rgba(34, 211, 238, ' + (Math.random() * 0.3 + 0.1) + ')'; 
+        }
+
+        Particle.prototype.draw = function() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+        };
+
+        Particle.prototype.update = function() {
+            this.x += this.vx;
+            this.y += this.vy;
+
+            // Boundary check: wrap around the screen
+            if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+            }
+            
+            this.draw();
+        };
+
+        // Initialize particles
+        for (let i = 0; i < numParticles; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        // Start the particle animation
+        animateParticles();
+    </script>
+</body>
+</html>
